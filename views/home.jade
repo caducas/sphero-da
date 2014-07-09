@@ -1,0 +1,21 @@
+doctype html
+html
+   head
+      title= title
+      link(rel='stylesheet' href='/css/garden.css')
+      link(rel='stylesheet' href='/css/bootstrap.css')
+      script(type='text/javascript', src="/socket.io/socket.io.js")
+      script(src='https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js')
+      script(type='text/javascript', src='/js/analyzer.js')
+   body
+      div#deviceSelectionArea
+         div(class='selectSphero selectSpheroLeft')#btnDeviceOne
+            span 1
+         div(class='selectSphero selectSpheroRight')#btnDeviceTwo
+            span 2
+         div(class='connectDevicesButton')#btnConnectDevices
+            span(class='connectDeviceButtonText') Connect
+      div#controlArea
+         button(class='btn btn-primary')#btnStartCalibration Start calibration
+         button(class='btn btn-primary')#btnFinishCalibration Finish calibration
+         script(type='text/javascript', src='/js/device-orientation.js')
