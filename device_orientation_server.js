@@ -7,6 +7,7 @@ var server = http.createServer(app);
 var io = require('socket.io').listen(server);
 var analyzer = require(__dirname + '/analyzer');
 var spheroControl = require(__dirname + '/spheroControl');
+var shellExecutor = require('child_process');
 // spheroControl.connectSpheros();
 // var spheroControl = require(__dirname + '/cylon_test.js');
 
@@ -24,13 +25,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.get('/', function(req, res){
   res.render('home.jade');
 	io.sockets.once('connection', function (socket) {
+		// spheroControl = require(__dirname + '/spheroControl');
 
 		socket.on('control', function(device, direction, speed) {
-			// var direction = analyzer.getDirection(x,y);
-			// var speed = analyzer.getSpeed(x,y);
-			// console.log('device: '+device+' direction: '+direction+' speed: '+speed);
-			// console.log('x:'+x);
-			// console.log('y:'+y);
   			process.emit('controllSphero', device, Math.round(direction), Math.round(speed));
 		});
 
@@ -45,6 +42,14 @@ app.get('/', function(req, res){
 		socket.on('connectDevices', function() {
 			process.emit('connectDevices');
 		});
+
+		socket.on('connectDevice', function(device) {
+			process.emit('connectDevice', device);
+		});
+
+		socket.on('stopDevice', function(device) {
+			process.emit('stopDevice', device);
+		});
 	});
 });
 
@@ -54,9 +59,12 @@ process.stdin.resume();//so the program will not close instantly
 function exitHandler(options, err) {
     if (options.cleanup) {
     	console.log('should clean');
+    	var cmd = "screen -dmS spheroserver bash -c 'cd ~/sphero-da ; node device_orientation_server.js'";
+    	shellExecutor.exec(cmd);
     }
     if (err) {
     	console.log(err.stack);
+    	console.log(err);
     }
     if (options.exit) {
     	console.log('should exit');

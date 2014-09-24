@@ -8,7 +8,16 @@ var socket = io.connect();
 // var maxY = garden.clientHeight - ball.clientHeight;
 var device = 0;
 
+socket.on('connect_error', function(err) {
+  // handle server error here
+  console.log('Error connecting to server - should close now');
+  window.location.reload();
+});
+
 function handleOrientation(event) {
+  if(device === 0) {
+    return;
+  }
   var x = event.beta;  // In degree in the range [-180,180]
   var y = event.gamma; // In degree in the range [-90,90]
   
@@ -72,6 +81,21 @@ function connectDevices() {
   socket.emit('connectDevices');
 }
 
+function connectDevice(device) {
+  socket.emit('connectDevice', device);
+}
+
+function backToMainMenu() {
+  $('#deviceSelectionArea').show();
+  $('#controlArea').hide();
+  stopSphero(device);
+  device = 0;
+}
+
+function stopSphero(dev) {
+  socket.emit('stopDevice', dev);
+}
+
 window.addEventListener('deviceorientation', handleOrientation);
 
 $('#btnFinishCalibration').bind('click', function() {
@@ -86,7 +110,14 @@ $('#btnStartCalibration').bind('click', function() {
   $('#btnStartCalibration').hide();  
 });
 
+$('#btnStartGame').bind('click', function() {
+  startGame();
+  $('#controlArea').hide();
+  $('#deviceSelectionArea').hide();
+});
+
 $('#controlArea').hide();
+$('#gameSelectionArea').hide();
 $('#deviceSelectionArea').show();
 
 $('#btnDeviceOne').bind('click', function() {
@@ -99,5 +130,25 @@ $('#btnDeviceTwo').bind('click', function() {
 
 $('#btnConnectDevices').bind('click', function() {
   connectDevices();
+});
+
+$('#btnConnectSphero1').bind('click', function() {
+  // $('#btnConnectSphero1').hide();
+  connectDevice(1);
+  // setTimeout(function() {
+  //   $('#btnConnectSphero1').show();
+  // },5000);
+});
+
+$('#btnConnectSphero2').bind('click', function() {
+  // $('#btnConnectSphero2').hide();
+  connectDevice(2);
+  // setTimeout(function() {
+  //   $('#btnConnectSphero2').show();
+  // },5000);
+});
+
+$('#controlAreaBackToMenu').bind('click', function() {
+  backToMainMenu();
 });
 
